@@ -1,0 +1,222 @@
+@model FatimaSchoolManagement.Models.ViewModels.StudentListViewModel
+@{
+    ViewData["Title"] = "Students";
+}
+
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <h2>Students Management</h2>
+        </div>
+        <div class="col-md-6 text-end">
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add New Student
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" asp-action="Index">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label for="searchTerm" class="form-label">Search</label>
+                        <input type="text" class="form-control" id="searchTerm" name="searchTerm" 
+                               value="@Model.SearchTerm" placeholder="Search by name or student number...">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="classId" class="form-label">Class</label>
+                        <select class="form-select" id="classId" name="classId">
+                            <option value="">All Classes</option>
+                            @foreach (var cls in Model.Classes)
+                            {
+                                <option value="@cls.ClassId" selected="@(Model.SelectedClassId == cls.ClassId)">
+                                    @cls.ClassName (@cls.LevelDescription)
+                                </option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="level" class="form-label">Level</label>
+                        <select class="form-select" id="level" name="level">
+                            <option value="">All Levels</option>
+                            <option value="1" selected="@(Model.SelectedLevel == EducationLevel.OLevel)">O-Level</option>
+                            <option value="2" selected="@(Model.SelectedLevel == EducationLevel.ALevel)">A-Level</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-search"></i> Filter
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Students List -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">
+                Students List 
+                <span class="badge bg-primary">@Model.TotalStudents total</span>
+            </h5>
+        </div>
+        <div class="card-body">
+            @if (Model.Students.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Photo</th>
+                                <th>Student Number</th>
+                                <th>Full Name</th>
+                                <th>Class</th>
+                                <th>Level</th>
+                                <th>Age</th>
+                                <th>Contact</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var student in Model.Students)
+                            {
+                                <tr>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(student.PhotoPath))
+                                        {
+                                            <img src="@student.PhotoPath" alt="Student Photo" 
+                                                 class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                                        }
+                                        else
+                                        {
+                                            <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center" 
+                                                 style="width: 50px; height: 50px;">
+                                                <i class="fas fa-user text-white"></i>
+                                            </div>
+                                        }
+                                    </td>
+                                    <td><strong>@student.StudentNumber</strong></td>
+                                    <td>@student.FullName</td>
+                                    <td>
+                                        <span class="badge bg-info">@student.ClassName</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-@(student.Level == EducationLevel.OLevel ? "primary" : "warning")">
+                                            @student.Level.ToString().Replace("Level", "-Level")
+                                        </span>
+                                    </td>
+                                    <td>@student.Age years</td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(student.ParentsContact))
+                                        {
+                                            <small>@student.ParentsContact</small>
+                                        }
+                                        else
+                                        {
+                                            <small class="text-muted">No contact</small>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a asp-action="Details" asp-route-id="@student.StudentId" 
+                                               class="btn btn-sm btn-outline-info" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@student.StudentId" 
+                                               class="btn btn-sm btn-outline-warning" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a asp-controller="Marks" asp-action="StudentReport" 
+                                               asp-route-studentId="@student.StudentId" 
+                                               asp-route-academicYear="@DateTime.Now.Year" 
+                                               asp-route-term="1"
+                                               class="btn btn-sm btn-outline-success" title="Report Card">
+                                                <i class="fas fa-file-alt"></i>
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@student.StudentId" 
+                                               class="btn btn-sm btn-outline-danger" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                @if (Model.TotalPages > 1)
+                {
+                    <nav aria-label="Students pagination">
+                        <ul class="pagination justify-content-center">
+                            @if (Model.CurrentPage > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" asp-action="Index" 
+                                       asp-route-page="@(Model.CurrentPage - 1)"
+                                       asp-route-searchTerm="@Model.SearchTerm"
+                                       asp-route-classId="@Model.SelectedClassId"
+                                       asp-route-level="@Model.SelectedLevel">Previous</a>
+                                </li>
+                            }
+
+                            @for (int i = Math.Max(1, Model.CurrentPage - 2); i <= Math.Min(Model.TotalPages, Model.CurrentPage + 2); i++)
+                            {
+                                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                    <a class="page-link" asp-action="Index" 
+                                       asp-route-page="@i"
+                                       asp-route-searchTerm="@Model.SearchTerm"
+                                       asp-route-classId="@Model.SelectedClassId"
+                                       asp-route-level="@Model.SelectedLevel">@i</a>
+                                </li>
+                            }
+
+                            @if (Model.CurrentPage < Model.TotalPages)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" asp-action="Index" 
+                                       asp-route-page="@(Model.CurrentPage + 1)"
+                                       asp-route-searchTerm="@Model.SearchTerm"
+                                       asp-route-classId="@Model.SelectedClassId"
+                                       asp-route-level="@Model.SelectedLevel">Next</a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                }
+
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <p class="text-muted">
+                            Showing @((Model.CurrentPage - 1) * Model.PageSize + 1) to @(Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalStudents)) 
+                            of @Model.TotalStudents students
+                        </p>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No students found</h5>
+                    <p class="text-muted">Try adjusting your search criteria or add new students.</p>
+                    <a asp-action="Create" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add First Student
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>

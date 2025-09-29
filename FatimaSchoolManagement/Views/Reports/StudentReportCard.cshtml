@@ -1,0 +1,319 @@
+@model StudentReportViewModel
+@{
+    ViewData["Title"] = "Student Report Card";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-file-alt"></i>
+                        Student Report Card
+                    </h3>
+                    <div class="no-print">
+                        <button onclick="window.print()" class="btn btn-primary me-2">
+                            <i class="fas fa-print"></i> Print Report Card
+                        </button>
+                        <a href="@Url.Action("GenerateStudentReportCardPDF", "Reports", new { studentId = Model.Student.StudentId, academicYear = Model.AcademicYear, term = Model.Term })" 
+                           class="btn btn-success me-2" target="_blank">
+                            <i class="fas fa-file-pdf"></i> Download PDF
+                        </a>
+                        <a href="@Url.Action("Index", "Reports")" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Reports
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- School Header -->
+                    <div class="text-center mb-4">
+                        <h2 class="text-primary">OUR LADY OF FATIMA SECONDARY SCHOOL</h2>
+                        <h4 class="text-secondary">STUDENT REPORT CARD - @Model.Term @Model.AcademicYear</h4>
+                    </div>
+
+                    <!-- Student Information -->
+                    <div class="row mb-4">
+                        <div class="col-md-8">
+                            <div class="card border-primary">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0">Student Information</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <p><strong>Student Name:</strong> @Model.Student.FullName</p>
+                                            <p><strong>Student Number:</strong> @Model.Student.StudentNumber</p>
+                                            <p><strong>Class:</strong> @Model.Class.ClassName</p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p><strong>Level:</strong> @(Model.Student.Level == EducationLevel.OLevel ? "O-Level" : "A-Level")</p>
+                                            <p><strong>Date of Birth:</strong> @Model.Student.DateOfBirth.ToString("dd/MM/yyyy")</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            @if (!string.IsNullOrEmpty(Model.Student.PhotoPath))
+                            {
+                                <div class="text-center">
+                                    <img src="@Model.Student.PhotoPath" alt="Student Photo" class="img-thumbnail" style="max-width: 150px; max-height: 200px;">
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="text-center">
+                                    <div class="bg-light border rounded d-flex align-items-center justify-content-center" style="width: 150px; height: 200px; margin: 0 auto;">
+                                        <i class="fas fa-user fa-3x text-muted"></i>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Academic Performance -->
+                    <div class="card border-success mb-4">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">Academic Performance</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Subject Code</th>
+                                            <th>Subject Name</th>
+                                            <th>BOT (10%)</th>
+                                            <th>MOT (20%)</th>
+                                            <th>EOT (70%)</th>
+                                            <th>Final Mark</th>
+                                            <th>Grade</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var subject in Model.SubjectMarks.OrderBy(s => s.SubjectName))
+                                        {
+                                            <tr>
+                                                <td>@subject.SubjectCode</td>
+                                                <td>@subject.SubjectName</td>
+                                                <td class="text-center">@(subject.BOTMark?.ToString("F1") ?? "-")</td>
+                                                <td class="text-center">@(subject.MOTMark?.ToString("F1") ?? "-")</td>
+                                                <td class="text-center">@(subject.EOTMark?.ToString("F1") ?? "-")</td>
+                                                <td class="text-center"><strong>@subject.FinalMark.ToString("F1")</strong></td>
+                                                <td class="text-center">
+                                                    <span class="badge bg-@(subject.Grade == "A" ? "success" : subject.Grade == "B" ? "primary" : subject.Grade == "C" ? "info" : subject.Grade == "D" ? "warning" : "danger")">
+                                                        @subject.Grade
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Performance Summary -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card border-info">
+                                <div class="card-header bg-info text-white">
+                                    <h5 class="mb-0">Performance Summary</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <p><strong>Total Marks:</strong></p>
+                                            <p><strong>Average Mark:</strong></p>
+                                            <p><strong>Overall Grade:</strong></p>
+                                            <p><strong>Class Position:</strong></p>
+                                        </div>
+                                        <div class="col-6 text-end">
+                                            <p>@Model.TotalMarks.ToString("F1")</p>
+                                            <p>@Model.AverageMark.ToString("F1")%</p>
+                                            <p>
+                                                <span class="badge bg-@(Model.OverallGrade == "A" ? "success" : Model.OverallGrade == "B" ? "primary" : Model.OverallGrade == "C" ? "info" : Model.OverallGrade == "D" ? "warning" : "danger") fs-6">
+                                                    @Model.OverallGrade
+                                                </span>
+                                            </p>
+                                            <p>@(Model.ClassPosition?.ToString() ?? "N/A") of @Model.TotalStudents</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-warning">
+                                <div class="card-header bg-warning">
+                                    <h5 class="mb-0">Grading System</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="small">
+                                        <p class="mb-1"><span class="badge bg-success">A</span> 80-100: Exceptional Achievement</p>
+                                        <p class="mb-1"><span class="badge bg-primary">B</span> 70-79: Outstanding Performance</p>
+                                        <p class="mb-1"><span class="badge bg-info">C</span> 60-69: Satisfactory Performance</p>
+                                        <p class="mb-1"><span class="badge bg-warning">D</span> 50-59: Basic Understanding</p>
+                                        <p class="mb-1"><span class="badge bg-danger">E</span> 0-49: Elementary Understanding</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comments Section -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Class Teacher's Comments</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-floating">
+                                        <textarea class="form-control" style="height: 100px" readonly>@(Model.TeacherComments ?? "")</textarea>
+                                        <label>Comments about student's performance and behavior</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Head Teacher's Comments</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-floating">
+                                        <textarea class="form-control" style="height: 100px" readonly>@(Model.HeadTeacherComments ?? "")</textarea>
+                                        <label>Head Teacher's remarks and recommendations</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="text-center mt-4">
+                        <small class="text-muted">
+                            Report generated on @DateTime.Now.ToString("dd/MM/yyyy HH:mm") | 
+                            Academic Term: @Model.Term @Model.AcademicYear
+                            @if (Model.NextTermBegins.HasValue)
+                            {
+                                <text><br />Next term begins: @Model.NextTermBegins.Value.ToString("dd/MM/yyyy")</text>
+                            }
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        /* Print Styles */
+        @@media print {
+            .no-print {
+                display: none !important;
+            }
+            
+            .card {
+                border: none !important;
+                box-shadow: none !important;
+            }
+            
+            .card-header {
+                background-color: #f8f9fa !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            
+            .bg-primary {
+                background-color: #007bff !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            
+            .bg-success {
+                background-color: #28a745 !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            
+            .bg-info {
+                background-color: #17a2b8 !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            
+            .bg-warning {
+                background-color: #ffc107 !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            
+            .text-white {
+                color: white !important;
+            }
+            
+            .badge {
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            
+            .table th {
+                background-color: #343a40 !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            
+            .table-striped tbody tr:nth-of-type(odd) {
+                background-color: rgba(0,0,0,.05) !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            
+            .container-fluid {
+                padding: 15px !important;
+            }
+            
+            h2, h4 {
+                color: #007bff !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            
+            /* Force page breaks */
+            .card {
+                page-break-inside: avoid;
+            }
+            
+            /* Ensure proper spacing */
+            .mb-4 {
+                margin-bottom: 1rem !important;
+            }
+            
+            /* Font sizes for print */
+            body {
+                font-size: 12px !important;
+            }
+            
+            h2 {
+                font-size: 18px !important;
+            }
+            
+            h4 {
+                font-size: 16px !important;
+            }
+            
+            h5 {
+                font-size: 14px !important;
+            }
+        }
+        
+        /* Screen styles for print button */
+        .no-print {
+            margin-bottom: 20px;
+        }
+    </style>
+}

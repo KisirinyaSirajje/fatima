@@ -1,0 +1,96 @@
+TROUBLESHOOTING GUIDE - Port Conflict & Environment Error Fix
+===============================================================
+
+PROBLEM 1: Port 5000 already in use (Address already in use)
+SOLUTION: Use Smart Launchers (RECOMMENDED)
+
+STEP 1: Use Smart Launcher (Best Solution)
+-----------------------------------------
+1. Double-click "SmartStart.ps1" (PowerShell version - most reliable)
+   OR
+2. Double-click "SmartStart.bat" (Windows batch version)
+
+These scripts will:
+✓ Automatically detect available ports
+✓ Test ports 5000, 5001, 5002, 5202, 5203, etc.
+✓ Use the first available port
+✓ Show you the exact URL to use
+✓ Open browser automatically when ready
+
+STEP 2: Manual Port Selection
+-----------------------------
+If smart launchers don't work:
+1. Open Command Prompt as Administrator
+2. Find what's using port 5000:
+   netstat -ano | findstr :5000
+3. Either stop that application or use different port
+4. Set custom port:
+   set ASPNETCORE_URLS=http://localhost:5001
+   FatimaSchoolManagement.exe
+
+PROBLEM 2: Generic error page showing "Development Mode" message
+SOLUTION: Follow these steps in order
+
+STEP 1: Use the Diagnostic Tool
+------------------------------
+1. Double-click "Diagnostic.bat"
+2. Review the output for any red ✗ marks
+3. If database issues are found, they will be auto-fixed
+
+STEP 2: Try PowerShell Version (RECOMMENDED)
+-------------------------------------------
+1. Right-click "StartFatimaSchool.ps1"
+2. Select "Run with PowerShell"
+3. If prompted, type "Y" to allow execution
+4. This version handles environment variables better
+
+STEP 3: Manual Environment Setup
+-------------------------------
+1. Open Command Prompt as Administrator
+2. Navigate to the deployment folder
+3. Run these commands:
+   cd /d "C:\Path\To\Your\Deployment\Folder"
+   set ASPNETCORE_ENVIRONMENT=Development
+   FatimaSchoolManagement.exe
+
+STEP 4: Alternative Port
+-----------------------
+If localhost:5000 doesn't work, try:
+- http://localhost:5202
+- http://127.0.0.1:5000
+- http://127.0.0.1:5202
+
+STEP 5: Check Windows Security
+-----------------------------
+1. Open Windows Defender
+2. Add the deployment folder to exclusions
+3. Temporarily disable real-time protection
+4. Try running the application again
+
+STEP 6: Reset Database (Last Resort)
+-----------------------------------
+1. Delete "FatimaSchool.db" if it exists
+2. Run "StartFatimaSchool.bat" again
+3. Fresh database will be created from template
+
+COMMON CAUSES OF ERRORS:
+- Port 5000 already in use (most common)
+- Environment variable not properly set
+- Windows security blocking execution
+- Corrupted database file
+- Missing permissions
+
+VERIFICATION STEPS:
+1. Use SmartStart.ps1 for automatic port detection
+2. Run Diagnostic.bat - should show all ✓ marks
+3. Application should start without port conflicts
+4. Browser should access the displayed URL
+5. Dashboard should load with school data
+
+If none of these steps work, the issue may be:
+- Missing .NET runtime (self-contained should include this)
+- Windows version compatibility
+- System permissions restrictions
+
+Contact support with the output from Diagnostic.bat
+==============================================

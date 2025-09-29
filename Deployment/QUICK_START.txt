@@ -1,0 +1,99 @@
+QUICK START GUIDE - Fatima School Management System
+===============================================
+
+🚀 FOR THE USER ON THE NEW LAPTOP:
+
+STEP 1: Copy the entire "Deployment" folder to your laptop
+   - Place it anywhere (Desktop, C:\FatimaSchool\, etc.)
+   - Ensure ALL files remain together
+
+STEP 2: Choose one option to install:
+
+   OPTION A (Recommended): Smart Launcher  
+   ----------------------------------------
+   1. Double-click "SmartStart.ps1" (PowerShell - most reliable)
+   2. OR Double-click "SmartStart.bat" (Windows batch)
+   3. Automatically finds available ports
+   4. Opens browser when ready
+
+   OPTION B: Automated Install
+   ----------------------------------------
+   1. Double-click "INSTALL.bat"
+   2. Follow the prompts
+   3. Creates desktop shortcut automatically
+
+   OPTION C: Manual Start
+   ----------------------
+   1. Double-click "StartFatimaSchool.bat"
+   2. Wait for the application to start
+
+STEP 3: Access the system
+   - Open web browser
+   - Go to: http://localhost:5000
+   - Start using the school management system!
+
+🔧 TROUBLESHOOTING:
+
+Problem: Port 5000 already in use (Address already in use error)
+Solution: 
+   - Use "SmartStart.ps1" or "SmartStart.bat" for automatic port detection
+   - These will find an available port automatically
+   - Look for "Now listening on: http://localhost:[PORT]" message
+
+Problem: Application shows generic error page
+Solution: 
+   - Run "Diagnostic.bat" to check system status
+   - Try "StartFatimaSchool.ps1" (PowerShell version)
+   - Run as Administrator
+
+Problem: Application won't start
+Solution: 
+   - Right-click INSTALL.bat → "Run as Administrator"
+   - Check Windows Defender isn't blocking files
+   - Run Diagnostic.bat for detailed analysis
+
+Problem: Can't access in browser
+Solution:
+   - Use the exact URL shown in the console output
+   - Try http://localhost:5202 instead
+   - Make sure no other application is using the port
+   - Check if application is actually running (Task Manager)
+
+Problem: Database errors
+Solution:
+   - Delete "FatimaSchool.db" file
+   - Restart the application
+
+📁 WHAT'S INCLUDED:
+
+✓ Complete executable application
+✓ Pre-loaded with sample data (classes, subjects, students)
+✓ CBC grading system implemented
+✓ Print and PDF report generation
+✓ Excel export functionality
+✓ Automatic database setup
+
+📞 SUPPORT FILES:
+
+- README.md: Complete documentation
+- SystemInfo.bat: Diagnostic information
+- Diagnostic.bat: Complete system diagnosis
+- SmartStart.ps1: Smart launcher with port detection (PowerShell)
+- SmartStart.bat: Smart launcher with port detection (Windows)
+- INSTALL.bat: Automated setup
+- StartFatimaSchool.bat: Manual startup (Windows)
+- StartFatimaSchool.ps1: Manual startup (PowerShell)
+
+🎯 SYSTEM FEATURES:
+
+✓ Student management (add, edit, photos)
+✓ Class organization (S1-S6)
+✓ Mark entry with CBC grading
+✓ Report card generation
+✓ Mark sheet printing
+✓ Excel export for records
+
+The system is ready to use immediately with sample data!
+
+===============================================
+© 2024 Our Lady of Fatima Secondary School

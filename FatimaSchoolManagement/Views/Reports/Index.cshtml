@@ -1,0 +1,326 @@
+@{
+    ViewData["Title"] = "Reports";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-file-alt"></i>
+                        Report Generation
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Individual Student Report Card -->
+                        <div class="col-md-6">
+                            <div class="card border-primary">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="card-title mb-0">
+                                        <i class="fas fa-user"></i>
+                                        Individual Student Report Card
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="studentReportForm" action="@Url.Action("StudentReportCard", "Reports")" method="get">
+                                        <div class="form-group mb-3">
+                                            <label for="studentSelect" class="form-label">Select Student:</label>
+                                            <select id="studentSelect" name="studentId" class="form-control" required>
+                                                <option value="">-- Select Student --</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <label for="studentAcademicYear" class="form-label">Academic Year:</label>
+                                            <select id="studentAcademicYear" name="academicYear" class="form-control" required>
+                                                @foreach (var year in ViewBag.AcademicYears as int[])
+                                                {
+                                                    <option value="@year" selected="@(year == DateTime.Now.Year)">@year</option>
+                                                }
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <label for="studentTerm" class="form-label">Term:</label>
+                                            <select id="studentTerm" name="term" class="form-control" required>
+                                                @foreach (var term in ViewBag.Terms as Term[])
+                                                {
+                                                    <option value="@term">@term</option>
+                                                }
+                                            </select>
+                                        </div>
+
+                                        <div class="d-grid gap-2">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-eye"></i> View Report Card
+                                            </button>
+                                            <button type="button" class="btn btn-success" onclick="generateStudentPDF()">
+                                                <i class="fas fa-file-pdf"></i> Generate PDF
+                                            </button>
+                                            <button type="button" class="btn btn-info" onclick="printStudentReport()">
+                                                <i class="fas fa-print"></i> Print Report
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Class Report Cards -->
+                        <div class="col-md-6">
+                            <div class="card border-success">
+                                <div class="card-header bg-success text-white">
+                                    <h5 class="card-title mb-0">
+                                        <i class="fas fa-users"></i>
+                                        Class Report Cards
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="classReportForm" action="@Url.Action("GenerateClassReportCards", "Reports")" method="get">
+                                        <div class="form-group mb-3">
+                                            <label for="classSelect" class="form-label">Select Class:</label>
+                                            <select id="classSelect" name="classId" class="form-control" required>
+                                                <option value="">-- Select Class --</option>
+                                                @foreach (var cls in ViewBag.Classes as List<Class>)
+                                                {
+                                                    <option value="@cls.ClassId">@cls.ClassName</option>
+                                                }
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <label for="classAcademicYear" class="form-label">Academic Year:</label>
+                                            <select id="classAcademicYear" name="academicYear" class="form-control" required>
+                                                @foreach (var year in ViewBag.AcademicYears as int[])
+                                                {
+                                                    <option value="@year" selected="@(year == DateTime.Now.Year)">@year</option>
+                                                }
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <label for="classTerm" class="form-label">Term:</label>
+                                            <select id="classTerm" name="term" class="form-control" required>
+                                                @foreach (var term in ViewBag.Terms as Term[])
+                                                {
+                                                    <option value="@term">@term</option>
+                                                }
+                                            </select>
+                                        </div>
+
+                                        <div class="d-grid">
+                                            <button type="submit" class="btn btn-success">
+                                                <i class="fas fa-file-pdf"></i> Generate Class Report Cards (PDF)
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Report Types -->
+                    <div class="row mt-4">
+                        <!-- Class Mark Sheet -->
+                        <div class="col-md-6">
+                            <div class="card border-info">
+                                <div class="card-header bg-info text-white">
+                                    <h5 class="card-title mb-0">
+                                        <i class="fas fa-table"></i>
+                                        Class Mark Sheet
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="markSheetForm" action="@Url.Action("ClassMarkSheet", "Reports")" method="get">
+                                        <div class="form-group mb-3">
+                                            <label for="markSheetClassSelect" class="form-label">Select Class:</label>
+                                            <select id="markSheetClassSelect" name="classId" class="form-control" required>
+                                                <option value="">-- Select Class --</option>
+                                                @foreach (var cls in ViewBag.Classes as List<Class>)
+                                                {
+                                                    <option value="@cls.ClassId">@cls.ClassName</option>
+                                                }
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <label for="markSheetAcademicYear" class="form-label">Academic Year:</label>
+                                            <select id="markSheetAcademicYear" name="academicYear" class="form-control" required>
+                                                @foreach (var year in ViewBag.AcademicYears as int[])
+                                                {
+                                                    <option value="@year" selected="@(year == DateTime.Now.Year)">@year</option>
+                                                }
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <label for="markSheetTerm" class="form-label">Term:</label>
+                                            <select id="markSheetTerm" name="term" class="form-control" required>
+                                                @foreach (var term in ViewBag.Terms as Term[])
+                                                {
+                                                    <option value="@term">@term</option>
+                                                }
+                                            </select>
+                                        </div>
+
+                                        <div class="d-grid gap-2">
+                                            <button type="submit" class="btn btn-info">
+                                                <i class="fas fa-table"></i> View Mark Sheet
+                                            </button>
+                                            <button type="button" class="btn btn-success" onclick="exportToExcel()">
+                                                <i class="fas fa-file-excel"></i> Export to Excel
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Class Analysis -->
+                        <div class="col-md-6">
+                            <div class="card border-warning">
+                                <div class="card-header bg-warning">
+                                    <h5 class="card-title mb-0">
+                                        <i class="fas fa-chart-line"></i>
+                                        Performance Analysis
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-outline-primary" onclick="loadTopPerformers()">
+                                            <i class="fas fa-trophy"></i> Top Performers Report
+                                        </button>
+                                        <button class="btn btn-outline-warning" onclick="loadPoorPerformers()">
+                                            <i class="fas fa-exclamation-triangle"></i> Students Needing Support
+                                        </button>
+                                        <button class="btn btn-outline-info" onclick="loadClassSummary()">
+                                            <i class="fas fa-chart-bar"></i> Class Performance Summary
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Load students when page loads
+            loadStudents();
+        });
+
+        function loadStudents() {
+            $.get('/api/students', function (data) {
+                var studentSelect = $('#studentSelect');
+                studentSelect.empty();
+                studentSelect.append('<option value="">-- Select Student --</option>');
+                
+                data.forEach(function (student) {
+                    studentSelect.append('<option value="' + student.studentId + '">' + 
+                        student.studentNumber + ' - ' + student.fullName + '</option>');
+                });
+            }).fail(function () {
+                // Fallback: load students by class
+                $('#classSelect').change(function () {
+                    var classId = $(this).val();
+                    if (classId) {
+                        loadStudentsByClass(classId);
+                    }
+                });
+            });
+        }
+
+        function loadStudentsByClass(classId) {
+            $.get('/Students/GetStudentsByClass/' + classId, function (data) {
+                var studentSelect = $('#studentSelect');
+                studentSelect.empty();
+                studentSelect.append('<option value="">-- Select Student --</option>');
+                
+                data.forEach(function (student) {
+                    studentSelect.append('<option value="' + student.studentId + '">' + 
+                        student.studentNumber + ' - ' + student.fullName + '</option>');
+                });
+            });
+        }
+
+        function generateStudentPDF() {
+            var studentId = $('#studentSelect').val();
+            var academicYear = $('#studentAcademicYear').val();
+            var term = $('#studentTerm').val();
+
+            if (!studentId || !academicYear || !term) {
+                alert('Please select student, academic year, and term.');
+                return;
+            }
+
+            var url = '@Url.Action("GenerateStudentReportCardPDF", "Reports")' + 
+                      '?studentId=' + studentId + 
+                      '&academicYear=' + academicYear + 
+                      '&term=' + term;
+            
+            window.open(url, '_blank');
+        }
+
+        function printStudentReport() {
+            var studentId = $('#studentSelect').val();
+            var academicYear = $('#studentAcademicYear').val();
+            var term = $('#studentTerm').val();
+
+            if (!studentId || !academicYear || !term) {
+                alert('Please select student, academic year, and term.');
+                return;
+            }
+
+            var url = '@Url.Action("StudentReportCard", "Reports")' + 
+                      '?studentId=' + studentId + 
+                      '&academicYear=' + academicYear + 
+                      '&term=' + term;
+            
+            // Open in new window and trigger print
+            var printWindow = window.open(url, '_blank');
+            printWindow.onload = function() {
+                printWindow.print();
+            };
+        }
+
+        function exportToExcel() {
+            var classId = $('#markSheetClassSelect').val();
+            var academicYear = $('#markSheetAcademicYear').val();
+            var term = $('#markSheetTerm').val();
+
+            if (!classId || !academicYear || !term) {
+                alert('Please select class, academic year, and term.');
+                return;
+            }
+
+            var url = '@Url.Action("ExportClassMarkSheetToExcel", "Reports")' + 
+                      '?classId=' + classId + 
+                      '&academicYear=' + academicYear + 
+                      '&term=' + term;
+            
+            window.open(url, '_blank');
+        }
+
+        function loadTopPerformers() {
+            // Implementation for top performers report
+            alert('Top Performers Report - Feature coming soon!');
+        }
+
+        function loadPoorPerformers() {
+            // Implementation for students needing support
+            alert('Students Needing Support Report - Feature coming soon!');
+        }
+
+        function loadClassSummary() {
+            // Implementation for class performance summary
+            alert('Class Performance Summary - Feature coming soon!');
+        }
+    </script>
+}

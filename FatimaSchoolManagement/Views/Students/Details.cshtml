@@ -1,0 +1,206 @@
+@model FatimaSchoolManagement.Models.Student
+
+@{
+    ViewData["Title"] = "Student Details";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Student Details</h1>
+        <div>
+            <a asp-action="Edit" asp-route-id="@Model.StudentId" class="btn btn-warning">
+                <i class="fas fa-edit fa-sm text-white-50"></i> Edit
+            </a>
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to Students
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Student Information Card -->
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Personal Information</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Student Number:</strong></td>
+                                    <td>@Model.StudentNumber</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Full Name:</strong></td>
+                                    <td>@Model.FullName</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Date of Birth:</strong></td>
+                                    <td>@Model.DateOfBirth.ToString("dd/MM/yyyy")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Age:</strong></td>
+                                    <td>@Model.Age years</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>LIN Number:</strong></td>
+                                    <td>@(Model.LINNumber ?? "Not provided")</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Level:</strong></td>
+                                    <td>
+                                        <span class="badge badge-@(Model.Level == FatimaSchoolManagement.Models.EducationLevel.OLevel ? "primary" : "info")">
+                                            @(Model.Level == FatimaSchoolManagement.Models.EducationLevel.OLevel ? "O-Level" : "A-Level")
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Class:</strong></td>
+                                    <td>@Model.Class.ClassName</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Parents' Contact:</strong></td>
+                                    <td>@(Model.ParentsContact ?? "Not provided")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Next of Kin:</strong></td>
+                                    <td>@(Model.NextOfKin ?? "Not provided")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Next of Kin Contact:</strong></td>
+                                    <td>@(Model.NextOfKinContact ?? "Not provided")</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Academic Performance Card -->
+            @if (Model.Marks.Any())
+            {
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Academic Performance</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Subject</th>
+                                        <th>Term</th>
+                                        <th>BOT (10%)</th>
+                                        <th>MOT (20%)</th>
+                                        <th>EOT (70%)</th>
+                                        <th>Final Mark</th>
+                                        <th>Grade</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var mark in Model.Marks.OrderBy(m => m.Subject.SubjectName).ThenBy(m => m.Term))
+                                    {
+                                        <tr>
+                                            <td>@mark.Subject.SubjectName</td>
+                                            <td>
+                                                <span class="badge badge-secondary">
+                                                    @mark.Term.ToString().Replace("Term", "Term ")
+                                                </span>
+                                            </td>
+                                            <td class="text-center">@(mark.BOTMark?.ToString("F1") ?? "-")</td>
+                                            <td class="text-center">@(mark.MOTMark?.ToString("F1") ?? "-")</td>
+                                            <td class="text-center">@(mark.EOTMark?.ToString("F1") ?? "-")</td>
+                                            <td class="text-center">
+                                                @if (mark.HasAllMarks)
+                                                {
+                                                    <strong>@mark.FinalMark.ToString("F1")</strong>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">Incomplete</span>
+                                                }
+                                            </td>
+                                            <td class="text-center">
+                                                @if (mark.HasAllMarks)
+                                                {
+                                                    <span class="badge badge-@GetGradeBadgeColor(mark.Grade)">@mark.Grade</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">-</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Photo and Quick Actions -->
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Student Photo</h6>
+                </div>
+                <div class="card-body text-center">
+                    @if (!string.IsNullOrEmpty(Model.PhotoPath))
+                    {
+                        <img src="@Model.PhotoPath" alt="@Model.FullName" class="img-fluid rounded mb-3" style="max-height: 250px;" />
+                    }
+                    else
+                    {
+                        <div class="bg-light p-4 rounded mb-3">
+                            <i class="fas fa-user fa-5x text-gray-300"></i>
+                            <p class="text-muted mt-2">No photo available</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a asp-controller="Marks" asp-action="StudentReport" asp-route-studentId="@Model.StudentId" asp-route-academicYear="@DateTime.Now.Year" asp-route-term="1" class="btn btn-info btn-block">
+                            <i class="fas fa-chart-line"></i> View Report Card
+                        </a>
+                        <a asp-action="Edit" asp-route-id="@Model.StudentId" class="btn btn-warning btn-block">
+                            <i class="fas fa-edit"></i> Edit Student
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@Model.StudentId" class="btn btn-danger btn-block">
+                            <i class="fas fa-trash"></i> Delete Student
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string GetGradeBadgeColor(string grade)
+    {
+        return grade switch
+        {
+            "A" => "success",
+            "B" => "primary",
+            "C" => "info",
+            "D" => "warning",
+            "E" => "danger",
+            _ => "secondary"
+        };
+    }
+}

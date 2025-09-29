@@ -1,0 +1,158 @@
+@model FatimaSchoolManagement.Models.ViewModels.StudentCreateViewModel
+@{
+    ViewData["Title"] = "Add New Student";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-user-plus"></i> Add New Student
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="row">
+                            <!-- Student Photo -->
+                            <div class="col-md-12 mb-3">
+                                <label asp-for="Photo" class="form-label">Student Photo</label>
+                                <input asp-for="Photo" class="form-control" type="file" accept="image/*" onchange="previewImage(this)">
+                                <span asp-validation-for="Photo" class="text-danger"></span>
+                                <div class="mt-2">
+                                    <img id="imagePreview" style="max-width: 150px; max-height: 150px; display: none;" class="img-thumbnail">
+                                </div>
+                            </div>
+
+                            <!-- Basic Information -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="StudentNumber" class="form-label">Student Number *</label>
+                                <input asp-for="StudentNumber" class="form-control" placeholder="Enter student number">
+                                <span asp-validation-for="StudentNumber" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="FullName" class="form-label">Full Name *</label>
+                                <input asp-for="FullName" class="form-control" placeholder="Enter full name">
+                                <span asp-validation-for="FullName" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DateOfBirth" class="form-label">Date of Birth *</label>
+                                <input asp-for="DateOfBirth" class="form-control" type="date">
+                                <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="LINNumber" class="form-label">LIN Number</label>
+                                <input asp-for="LINNumber" class="form-control" placeholder="Enter LIN number">
+                                <span asp-validation-for="LINNumber" class="text-danger"></span>
+                            </div>
+
+                            <!-- Academic Information -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Level" class="form-label">Education Level *</label>
+                                <select asp-for="Level" class="form-select" onchange="filterClasses()">
+                                    <option value="">Select Level</option>
+                                    <option value="1">O-Level</option>
+                                    <option value="2">A-Level</option>
+                                </select>
+                                <span asp-validation-for="Level" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ClassId" class="form-label">Class *</label>
+                                <select asp-for="ClassId" class="form-select" id="classSelect">
+                                    <option value="">Select Class</option>
+                                    @foreach (var cls in Model.AvailableClasses)
+                                    {
+                                        <option value="@cls.ClassId" data-level="@((int)cls.Level)">@cls.ClassName (@cls.LevelDescription)</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="ClassId" class="text-danger"></span>
+                            </div>
+
+                            <!-- Contact Information -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ParentsContact" class="form-label">Parents' Contact</label>
+                                <input asp-for="ParentsContact" class="form-control" placeholder="Enter parent's phone number">
+                                <span asp-validation-for="ParentsContact" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="NextOfKin" class="form-label">Next of Kin</label>
+                                <input asp-for="NextOfKin" class="form-control" placeholder="Enter next of kin name">
+                                <span asp-validation-for="NextOfKin" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="NextOfKinContact" class="form-label">Next of Kin Contact</label>
+                                <input asp-for="NextOfKinContact" class="form-control" placeholder="Enter next of kin phone number">
+                                <span asp-validation-for="NextOfKinContact" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Create Student
+                                </button>
+                                <a asp-action="Index" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left"></i> Back to List
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        function previewImage(input) {
+            const preview = document.getElementById('imagePreview');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+
+        function filterClasses() {
+            const levelSelect = document.querySelector('[name="Level"]');
+            const classSelect = document.getElementById('classSelect');
+            const selectedLevel = levelSelect.value;
+
+            // Clear current selection
+            classSelect.value = '';
+
+            // Show/hide options based on selected level
+            const options = classSelect.querySelectorAll('option');
+            options.forEach(option => {
+                if (option.value === '') {
+                    option.style.display = 'block';
+                } else {
+                    const optionLevel = option.getAttribute('data-level');
+                    option.style.display = (selectedLevel === '' || selectedLevel === optionLevel) ? 'block' : 'none';
+                }
+            });
+        }
+
+        // Initialize filtering on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            filterClasses();
+        });
+    </script>
+}
