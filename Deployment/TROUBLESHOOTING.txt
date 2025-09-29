@@ -1,96 +1,461 @@
-TROUBLESHOOTING GUIDE - Port Conflict & Environment Error Fix
-===============================================================
+# Fatima School Management System - Troubleshooting GuideTROUBLESHOOTING GUIDE - Port Conflict & Environment Error Fix
 
-PROBLEM 1: Port 5000 already in use (Address already in use)
+## Common Issues and Solutions===============================================================
+
+
+
+---PROBLEM 1: Port 5000 already in use (Address already in use)
+
 SOLUTION: Use Smart Launchers (RECOMMENDED)
 
+## 🚨 **STARTUP ISSUES**
+
 STEP 1: Use Smart Launcher (Best Solution)
------------------------------------------
-1. Double-click "SmartStart.ps1" (PowerShell version - most reliable)
+
+### ❌ **Error: "Address already in use"**-----------------------------------------
+
+**Problem**: Port 5000 is already occupied by another application1. Double-click "SmartStart.ps1" (PowerShell version - most reliable)
+
    OR
-2. Double-click "SmartStart.bat" (Windows batch version)
 
-These scripts will:
-✓ Automatically detect available ports
+**Solution**:2. Double-click "SmartStart.bat" (Windows batch version)
+
+1. Use **SmartStart.ps1** (automatically finds available port)
+
+2. Alternative: Use **SmartStart.bat**These scripts will:
+
+3. Manual fix: Set different port using `set ASPNETCORE_URLS=http://localhost:5001`✓ Automatically detect available ports
+
 ✓ Test ports 5000, 5001, 5002, 5202, 5203, etc.
-✓ Use the first available port
+
+**Prevention**: Always use smart launchers instead of manual startup✓ Use the first available port
+
 ✓ Show you the exact URL to use
-✓ Open browser automatically when ready
 
-STEP 2: Manual Port Selection
------------------------------
+---✓ Open browser automatically when ready
+
+
+
+### ❌ **Error: "FatimaSchoolManagement.exe not found"**STEP 2: Manual Port Selection
+
+**Problem**: Application file missing or corrupted-----------------------------
+
 If smart launchers don't work:
-1. Open Command Prompt as Administrator
-2. Find what's using port 5000:
-   netstat -ano | findstr :5000
-3. Either stop that application or use different port
-4. Set custom port:
-   set ASPNETCORE_URLS=http://localhost:5001
-   FatimaSchoolManagement.exe
 
-PROBLEM 2: Generic error page showing "Development Mode" message
+**Solution**:1. Open Command Prompt as Administrator
+
+1. Verify `FatimaSchoolManagement.exe` exists in deployment folder2. Find what's using port 5000:
+
+2. Check file permissions (right-click → Properties → Security)   netstat -ano | findstr :5000
+
+3. Re-copy deployment folder if necessary3. Either stop that application or use different port
+
+4. Run from correct directory4. Set custom port:
+
+   set ASPNETCORE_URLS=http://localhost:5001
+
+**Prevention**: Keep complete deployment folder intact   FatimaSchoolManagement.exe
+
+
+
+---PROBLEM 2: Generic error page showing "Development Mode" message
+
 SOLUTION: Follow these steps in order
 
-STEP 1: Use the Diagnostic Tool
+### ❌ **Error: "Dynamic port binding not supported"**
+
+**Problem**: Application trying to use localhost:0 for automatic port detectionSTEP 1: Use the Diagnostic Tool
+
 ------------------------------
-1. Double-click "Diagnostic.bat"
-2. Review the output for any red ✗ marks
-3. If database issues are found, they will be auto-fixed
+
+**Solution**:1. Double-click "Diagnostic.bat"
+
+1. Use **SmartStart.ps1** (handles this automatically)2. Review the output for any red ✗ marks
+
+2. Set specific port: `$env:ASPNETCORE_URLS="http://localhost:5001"`3. If database issues are found, they will be auto-fixed
+
+3. Avoid using port 0 with localhost
 
 STEP 2: Try PowerShell Version (RECOMMENDED)
--------------------------------------------
+
+**Technical Note**: Use 127.0.0.1:0 instead of localhost:0 for dynamic binding-------------------------------------------
+
 1. Right-click "StartFatimaSchool.ps1"
-2. Select "Run with PowerShell"
+
+---2. Select "Run with PowerShell"
+
 3. If prompted, type "Y" to allow execution
-4. This version handles environment variables better
 
-STEP 3: Manual Environment Setup
--------------------------------
+## 💾 **DATABASE ISSUES**4. This version handles environment variables better
+
+
+
+### ❌ **Error: "SQLite Error 1: 'no such table: Students'"**STEP 3: Manual Environment Setup
+
+**Problem**: Database file exists but tables are missing or corrupted-------------------------------
+
 1. Open Command Prompt as Administrator
-2. Navigate to the deployment folder
-3. Run these commands:
-   cd /d "C:\Path\To\Your\Deployment\Folder"
-   set ASPNETCORE_ENVIRONMENT=Development
-   FatimaSchoolManagement.exe
 
-STEP 4: Alternative Port
------------------------
-If localhost:5000 doesn't work, try:
-- http://localhost:5202
+**Solution**:2. Navigate to the deployment folder
+
+1. **Close application completely**3. Run these commands:
+
+2. **Delete `FatimaSchool.db`**   cd /d "C:\Path\To\Your\Deployment\Folder"
+
+3. **Copy `FatimaSchool_Template.db` to `FatimaSchool.db`**   set ASPNETCORE_ENVIRONMENT=Development
+
+4. **Restart application**   FatimaSchoolManagement.exe
+
+
+
+**Command**:STEP 4: Alternative Port
+
+```-----------------------
+
+copy "FatimaSchool_Template.db" "FatimaSchool.db"If localhost:5000 doesn't work, try:
+
+```- http://localhost:5202
+
 - http://127.0.0.1:5000
-- http://127.0.0.1:5202
 
-STEP 5: Check Windows Security
+**Prevention**: Regular database backups, don't manually edit database- http://127.0.0.1:5202
+
+
+
+---STEP 5: Check Windows Security
+
 -----------------------------
-1. Open Windows Defender
-2. Add the deployment folder to exclusions
+
+### ❌ **Error: "Database is locked"**1. Open Windows Defender
+
+**Problem**: Multiple processes trying to access database simultaneously2. Add the deployment folder to exclusions
+
 3. Temporarily disable real-time protection
-4. Try running the application again
 
-STEP 6: Reset Database (Last Resort)
------------------------------------
-1. Delete "FatimaSchool.db" if it exists
+**Solution**:4. Try running the application again
+
+1. **Close all instances** of the application
+
+2. **End any hanging processes** in Task ManagerSTEP 6: Reset Database (Last Resort)
+
+3. **Wait 30 seconds**-----------------------------------
+
+4. **Restart application**1. Delete "FatimaSchool.db" if it exists
+
 2. Run "StartFatimaSchool.bat" again
-3. Fresh database will be created from template
 
-COMMON CAUSES OF ERRORS:
+**Prevention**: Close application properly, don't force-close3. Fresh database will be created from template
+
+
+
+---COMMON CAUSES OF ERRORS:
+
 - Port 5000 already in use (most common)
-- Environment variable not properly set
-- Windows security blocking execution
+
+### ❌ **Error: "Database disk image is malformed"**- Environment variable not properly set
+
+**Problem**: Database file is corrupted- Windows security blocking execution
+
 - Corrupted database file
-- Missing permissions
 
-VERIFICATION STEPS:
-1. Use SmartStart.ps1 for automatic port detection
-2. Run Diagnostic.bat - should show all ✓ marks
+**Solution**:- Missing permissions
+
+1. **Stop application**
+
+2. **Restore from backup** if availableVERIFICATION STEPS:
+
+3. **Or replace with template**: Copy `FatimaSchool_Template.db` to `FatimaSchool.db`1. Use SmartStart.ps1 for automatic port detection
+
+4. **Restart application**2. Run Diagnostic.bat - should show all ✓ marks
+
 3. Application should start without port conflicts
-4. Browser should access the displayed URL
-5. Dashboard should load with school data
 
-If none of these steps work, the issue may be:
-- Missing .NET runtime (self-contained should include this)
+**Data Recovery**:4. Browser should access the displayed URL
+
+```sql5. Dashboard should load with school data
+
+-- If partial recovery needed, use SQLite recovery tools
+
+.recover FatimaSchool_recovered.dbIf none of these steps work, the issue may be:
+
+```- Missing .NET runtime (self-contained should include this)
+
 - Windows version compatibility
-- System permissions restrictions
 
-Contact support with the output from Diagnostic.bat
+---- System permissions restrictions
+
+
+
+## 🌐 **BROWSER & ACCESS ISSUES**Contact support with the output from Diagnostic.bat
+
 ==============================================
+### ❌ **Page won't load / "This site can't be reached"**
+**Problem**: Browser can't connect to application
+
+**Solution**:
+1. **Check application is running** (console window visible)
+2. **Verify correct URL**: http://localhost:5001
+3. **Try different browser** (Chrome, Edge, Firefox)
+4. **Check Windows Firewall** settings
+5. **Restart application and browser**
+
+**URL Troubleshooting**:
+- ✅ http://localhost:5001 (correct)
+- ❌ https://localhost:5001 (wrong - no HTTPS)
+- ❌ http://localhost (missing port)
+
+---
+
+### ❌ **Browser shows "Development Error Page"**
+**Problem**: Application error in development mode
+
+**Solution**:
+1. **Read error details** carefully
+2. **Check database connection**
+3. **Verify all required files exist**
+4. **Restart application**
+5. **Check environment variable**: `ASPNETCORE_ENVIRONMENT=Development`
+
+---
+
+### ❌ **Features not working (JavaScript errors)**
+**Problem**: JavaScript disabled or browser compatibility
+
+**Solution**:
+1. **Enable JavaScript** in browser settings
+2. **Clear browser cache** (Ctrl+Shift+Delete)
+3. **Update browser** to latest version
+4. **Try different browser**
+5. **Disable browser extensions** temporarily
+
+---
+
+## 📸 **PHOTO UPLOAD ISSUES**
+
+### ❌ **Error: "File too large"**
+**Problem**: Student photo exceeds 5MB limit
+
+**Solution**:
+1. **Resize image** using image editor
+2. **Compress image** to reduce file size
+3. **Use different format** (JPG instead of PNG)
+4. **Recommended size**: 300x400 pixels
+
+**Image Tools**:
+- Windows Photos app (resize)
+- Paint (save as different format)
+- Online tools (compress images)
+
+---
+
+### ❌ **Error: "Invalid file type"**
+**Problem**: Unsupported image format
+
+**Solution**:
+1. **Use supported formats**: JPG, JPEG, PNG, GIF
+2. **Convert image** to supported format
+3. **Check file extension** matches actual format
+
+**Supported**: ✅ .jpg, ✅ .jpeg, ✅ .png, ✅ .gif  
+**Not Supported**: ❌ .bmp, ❌ .tiff, ❌ .webp
+
+---
+
+### ❌ **Photos not displaying in reports**
+**Problem**: Image path issues or missing files
+
+**Solution**:
+1. **Check `wwwroot/uploads` folder** exists
+2. **Verify photo files** are in uploads folder
+3. **Re-upload photos** if necessary
+4. **Check file permissions**
+
+---
+
+## 🖨️ **PRINTING & REPORT ISSUES**
+
+### ❌ **Reports print with wrong layout**
+**Problem**: Incorrect printer settings or browser issues
+
+**Solution**:
+1. **Use Chrome or Edge** for printing
+2. **Check page orientation**:
+   - Report cards: Portrait
+   - Mark sheets: Landscape
+3. **Set paper size**: A4
+4. **Print preview** before printing
+5. **Adjust margins** if needed
+
+---
+
+### ❌ **"No data found" in reports**
+**Problem**: Missing marks or incorrect term/year selection
+
+**Solution**:
+1. **Verify marks entered** for selected period
+2. **Check term and year** selections
+3. **Ensure students assigned** to selected class
+4. **Enter missing assessments**
+
+---
+
+### ❌ **Excel export fails**
+**Problem**: Large dataset or system memory issues
+
+**Solution**:
+1. **Export smaller data sets**
+2. **Close other applications** to free memory
+3. **Export by class** instead of all students
+4. **Try CSV format** instead of Excel
+
+---
+
+## ⚡ **PERFORMANCE ISSUES**
+
+### ❌ **Application runs slowly**
+**Problem**: System resources or large database
+
+**Solution**:
+1. **Close unnecessary applications**
+2. **Check available RAM** (Task Manager)
+3. **Restart application** periodically
+4. **Clear browser cache**
+5. **Check disk space** (minimum 1GB free)
+
+---
+
+### ❌ **Long loading times**
+**Problem**: Large number of students or marks
+
+**Solution**:
+1. **Use pagination** in student lists
+2. **Filter by class** instead of viewing all
+3. **Archive old academic years**
+4. **Restart application** daily
+
+---
+
+## 🔧 **SYSTEM MAINTENANCE**
+
+### 📅 **Weekly Maintenance**
+1. **Backup database**: Copy `FatimaSchool.db`
+2. **Backup photos**: Copy `wwwroot/uploads` folder
+3. **Check disk space**: Ensure adequate free space
+4. **Restart application**: Fresh start weekly
+
+### 📅 **Monthly Maintenance**
+1. **Clean temporary files**: Delete browser cache
+2. **Check system updates**: Windows updates
+3. **Verify data accuracy**: Review student records
+4. **Test backups**: Ensure backup files work
+
+### 📅 **Term-end Maintenance**
+1. **Complete data backup**: Full system backup
+2. **Archive old data**: Export previous term data
+3. **Clean uploaded photos**: Remove unused images
+4. **Performance check**: Monitor system speed
+
+---
+
+## 🆘 **EMERGENCY PROCEDURES**
+
+### 🚨 **Complete System Reset**
+**When to use**: Major corruption, system completely broken
+
+**Steps**:
+1. **Close application**
+2. **Backup current database** (if possible)
+3. **Delete `FatimaSchool.db`**
+4. **Copy `FatimaSchool_Template.db` to `FatimaSchool.db`**
+5. **Clear `wwwroot/uploads` folder**
+6. **Restart application**
+7. **Re-enter current academic data**
+
+---
+
+### 🚨 **Data Recovery from Backup**
+**When to use**: Data loss, database corruption
+
+**Steps**:
+1. **Close application**
+2. **Replace `FatimaSchool.db` with backup**
+3. **Replace `wwwroot/uploads` with backup photos**
+4. **Restart application**
+5. **Verify data integrity**
+
+---
+
+### 🚨 **Port Conflict Resolution**
+**When to use**: Multiple applications need same port
+
+**Manual Method**:
+```powershell
+# Find available ports
+netstat -an | findstr :5000
+netstat -an | findstr :5001
+netstat -an | findstr :5002
+
+# Set specific port
+$env:ASPNETCORE_URLS="http://localhost:5002"
+.\FatimaSchoolManagement.exe
+```
+
+---
+
+## 📞 **GETTING ADDITIONAL HELP**
+
+### 🔍 **Diagnostic Information**
+Run `Diagnostic.bat` to generate system information:
+- System specifications
+- Available ports
+- File permissions
+- Database status
+
+### 📝 **Error Reporting**
+When reporting issues, include:
+1. **Exact error message**
+2. **Steps to reproduce**
+3. **System information** (Windows version, RAM)
+4. **Application version**
+5. **Screenshot** of error (if applicable)
+
+### 📚 **Additional Resources**
+- **USER_MANUAL.md**: Complete user guide
+- **TECHNICAL_DOCUMENTATION.md**: Technical details
+- **QUICK_REFERENCE.md**: Common operations
+
+---
+
+## 🔄 **Quick Command Reference**
+
+### PowerShell Commands
+```powershell
+# Check if port is available
+Test-NetConnection -ComputerName localhost -Port 5001
+
+# Set environment variables
+$env:ASPNETCORE_ENVIRONMENT="Development"
+$env:ASPNETCORE_URLS="http://localhost:5001"
+
+# Check running processes
+Get-Process | Where-Object {$_.ProcessName -like "*Fatima*"}
+```
+
+### File Commands
+```cmd
+# Copy database template
+copy "FatimaSchool_Template.db" "FatimaSchool.db"
+
+# Check file exists
+if exist "FatimaSchool.db" echo Database found
+
+# Show file information
+dir "FatimaSchool*.db"
+```
+
+---
+
+*© 2024 Our Lady of Fatima Secondary School*  
+*Troubleshooting Guide v2.0 - Solutions for common technical issues*
+
+**Remember**: When in doubt, use SmartStart.ps1 - it handles most common issues automatically!
