@@ -100,7 +100,7 @@
                                                 <td class="text-center">@(subject.BOTMark?.ToString("F1") ?? "-")</td>
                                                 <td class="text-center">@(subject.MOTMark?.ToString("F1") ?? "-")</td>
                                                 <td class="text-center">@(subject.EOTMark?.ToString("F1") ?? "-")</td>
-                                                <td class="text-center"><strong>@subject.FinalMark.ToString("F1")</strong></td>
+                                                <td class="text-center"><strong>@($"{subject.FinalMark.ToString("F1")} ({subject.OLevelPoints.ToString("F2")})")</strong></td>
                                                 <td class="text-center">
                                                     <span class="badge bg-@(subject.Grade == "A" ? "success" : subject.Grade == "B" ? "primary" : subject.Grade == "C" ? "info" : subject.Grade == "D" ? "warning" : "danger")">
                                                         @subject.Grade
@@ -150,11 +150,11 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="small">
-                                        <p class="mb-1"><span class="badge bg-success">A</span> 80-100: Exceptional Achievement</p>
-                                        <p class="mb-1"><span class="badge bg-primary">B</span> 70-79: Outstanding Performance</p>
-                                        <p class="mb-1"><span class="badge bg-info">C</span> 60-69: Satisfactory Performance</p>
-                                        <p class="mb-1"><span class="badge bg-warning">D</span> 50-59: Basic Understanding</p>
-                                        <p class="mb-1"><span class="badge bg-danger">E</span> 0-49: Elementary Understanding</p>
+                                        <p class="mb-1"><span class="badge bg-success">A</span> 2.50 – 3.00: Exceptional Achievement</p>
+                                        <p class="mb-1"><span class="badge bg-primary">B</span> 2.10 – 2.49: Outstanding Performance</p>
+                                        <p class="mb-1"><span class="badge bg-info">C</span> 1.60 – 2.09: Satisfactory Performance</p>
+                                        <p class="mb-1"><span class="badge bg-warning">D</span> 1.00 – 1.59: Basic Understanding</p>
+                                        <p class="mb-1"><span class="badge bg-danger">E</span> 0.00 – 0.99: Elementary Understanding</p>
                                     </div>
                                 </div>
                             </div>

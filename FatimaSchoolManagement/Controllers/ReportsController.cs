@@ -625,7 +625,10 @@ namespace FatimaSchoolManagement.Controllers
                 AddTableCell(marksTable, mark.BOTMark?.ToString("F1") ?? "-", normalFont);
                 AddTableCell(marksTable, mark.MOTMark?.ToString("F1") ?? "-", normalFont);
                 AddTableCell(marksTable, mark.EOTMark?.ToString("F1") ?? "-", normalFont);
-                AddTableCell(marksTable, mark.FinalMark.ToString("F1"), normalFont);
+                var finalMarkText = student.Level == EducationLevel.OLevel
+                    ? $"{mark.FinalMark.ToString("F1")} ({mark.OLevelPoints.ToString("F2")})"
+                    : mark.FinalMark.ToString("F1");
+                AddTableCell(marksTable, finalMarkText, normalFont);
                 AddTableCell(marksTable, mark.Grade, normalFont);
             }
 
@@ -656,9 +659,13 @@ namespace FatimaSchoolManagement.Controllers
             };
             document.Add(gradingParagraph);
 
-            var gradingText = "A (80-100): Exceptional Achievement | B (70-79): Outstanding Performance | " +
-                             "C (60-69): Satisfactory Performance | D (50-59): Basic Understanding | " +
-                             "E (0-49): Elementary Understanding";
+            var gradingText = student.Level == EducationLevel.OLevel
+                ? "A (2.50 – 3.00): Exceptional Achievement | B (2.10 – 2.49): Outstanding Performance | " +
+                  "C (1.60 – 2.09): Satisfactory Performance | D (1.00 – 1.59): Basic Understanding | " +
+                  "E (0.00 – 0.99): Elementary Understanding"
+                : "A (80-100): Exceptional Achievement | B (70-79): Outstanding Performance | " +
+                  "C (60-69): Satisfactory Performance | D (50-59): Basic Understanding | " +
+                  "E (0-49): Elementary Understanding";
             var gradingInfo = new Paragraph(gradingText, smallFont);
             document.Add(gradingInfo);
 

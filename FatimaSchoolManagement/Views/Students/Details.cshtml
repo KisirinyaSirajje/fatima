@@ -119,7 +119,7 @@
                                             <td class="text-center">
                                                 @if (mark.HasAllMarks)
                                                 {
-                                                    <strong>@mark.FinalMark.ToString("F1")</strong>
+                                                    <strong>@($"{mark.FinalMark.ToString("F1")} ({mark.OLevelPoints.ToString("F2")})")</strong>
                                                 }
                                                 else
                                                 {
