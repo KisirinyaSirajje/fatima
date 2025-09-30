@@ -41,6 +41,86 @@ namespace FatimaSchoolManagement.Controllers
             return View();
         }
 
+        // GET: Reports/Subs
+        public async Task<IActionResult> Subs()
+        {
+            var classes = await _context.Classes.Where(c => c.IsActive).OrderBy(c => c.ClassName).ToListAsync();
+            ViewBag.Classes = classes;
+            ViewBag.Terms = Enum.GetValues<Term>();
+            ViewBag.AcademicYears = new[] { 2023, 2024, 2025 };
+
+            return View();
+        }
+
+        // POST: Reports/ViewSubsMarks
+        [HttpPost]
+        public async Task<IActionResult> ViewSubsMarks(int classId, int academicYear, Term term, string markType)
+        {
+            var classEntity = await _context.Classes.FindAsync(classId);
+            if (classEntity == null)
+            {
+                return NotFound();
+            }
+
+            var students = await _context.Students
+                .Where(s => s.ClassId == classId)
+                .OrderBy(s => s.FullName)
+                .ToListAsync();
+
+            var subjects = await _context.Subjects
+                .Where(s => s.Level == classEntity.Level && s.IsActive)
+                .OrderBy(s => s.SubjectName)
+                .ToListAsync();
+
+            var allMarks = await _context.Marks
+                .Where(m => students.Select(s => s.StudentId).Contains(m.StudentId)
+                           && m.AcademicYear == academicYear && m.Term == term)
+                .ToListAsync();
+
+            var studentRows = new List<StudentSubsRow>();
+
+            foreach (var student in students)
+            {
+                var studentMarks = allMarks.Where(m => m.StudentId == student.StudentId).ToList();
+                var subjectMarksDict = new Dictionary<int, decimal?>();
+
+                foreach (var subject in subjects)
+                {
+                    var mark = studentMarks.FirstOrDefault(m => m.SubjectId == subject.SubjectId);
+                    decimal? selectedMark = null;
+                    if (mark != null)
+                    {
+                        selectedMark = markType switch
+                        {
+                            "BOT" => mark.BOTMark,
+                            "MOT" => mark.MOTMark,
+                            "EOT" => mark.EOTMark,
+                            _ => null
+                        };
+                    }
+                    subjectMarksDict[subject.SubjectId] = selectedMark;
+                }
+
+                studentRows.Add(new StudentSubsRow
+                {
+                    Student = student,
+                    SubjectMarks = subjectMarksDict
+                });
+            }
+
+            var viewModel = new SubsMarkSheetViewModel
+            {
+                Class = classEntity,
+                AcademicYear = academicYear,
+                Term = term,
+                MarkType = markType,
+                Subjects = subjects,
+                StudentRows = studentRows
+            };
+
+            return View(viewModel);
+        }
+
         // GET: Reports/StudentReportCard/5?academicYear=2024&term=Term1
         public async Task<IActionResult> StudentReportCard(int studentId, int academicYear, Term term)
         {
@@ -547,6 +627,116 @@ namespace FatimaSchoolManagement.Controllers
             workbook.SaveAs(stream);
             
             var fileName = $"MarkSheet_{classEntity.ClassName}_{academicYear}_{term}.xlsx";
+            return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+        }
+
+        // GET: Reports/ExportSubsToExcel?classId=1&academicYear=2024&term=Term1&markType=BOT
+        public async Task<IActionResult> ExportSubsToExcel(int classId, int academicYear, Term term, string markType)
+        {
+            var classEntity = await _context.Classes.FindAsync(classId);
+            if (classEntity == null)
+            {
+                return NotFound();
+            }
+
+            var students = await _context.Students
+                .Where(s => s.ClassId == classId)
+                .OrderBy(s => s.FullName)
+                .ToListAsync();
+
+            var subjects = await _context.Subjects
+                .Where(s => s.Level == classEntity.Level && s.IsActive)
+                .OrderBy(s => s.SubjectName)
+                .ToListAsync();
+
+            var allMarks = await _context.Marks
+                .Where(m => students.Select(s => s.StudentId).Contains(m.StudentId)
+                           && m.AcademicYear == academicYear && m.Term == term)
+                .ToListAsync();
+
+            using var workbook = new XLWorkbook();
+            var worksheet = workbook.Worksheets.Add($"{classEntity.ClassName} {markType} Marks");
+
+            // Header information
+            worksheet.Cell(1, 1).Value = "OUR LADY OF FATIMA SECONDARY SCHOOL";
+            worksheet.Cell(1, 1).Style.Font.Bold = true;
+            worksheet.Cell(1, 1).Style.Font.FontSize = 16;
+            worksheet.Range(1, 1, 1, subjects.Count + 3).Merge();
+            worksheet.Cell(1, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            worksheet.Cell(2, 1).Value = $"{markType} MARKS - {classEntity.ClassName} - {term} {academicYear}";
+            worksheet.Cell(2, 1).Style.Font.Bold = true;
+            worksheet.Cell(2, 1).Style.Font.FontSize = 14;
+            worksheet.Range(2, 1, 2, subjects.Count + 3).Merge();
+            worksheet.Cell(2, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            // Column headers
+            int row = 4;
+            int col = 1;
+
+            worksheet.Cell(row, col++).Value = "S/N";
+            worksheet.Cell(row, col++).Value = "Student Number";
+            worksheet.Cell(row, col++).Value = "Student Name";
+
+            // Subject columns
+            foreach (var subject in subjects)
+            {
+                worksheet.Cell(row, col++).Value = subject.SubjectName;
+            }
+
+            // Apply header styling
+            var headerRange = worksheet.Range(row, 1, row, col - 1);
+            headerRange.Style.Font.Bold = true;
+            headerRange.Style.Fill.BackgroundColor = XLColor.LightGray;
+            headerRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thick;
+            headerRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+            headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            // Student data
+            row++;
+            int studentNumber = 1;
+
+            foreach (var student in students)
+            {
+                var studentMarks = allMarks.Where(m => m.StudentId == student.StudentId).ToList();
+                col = 1;
+                worksheet.Cell(row, col++).Value = studentNumber++;
+                worksheet.Cell(row, col++).Value = student.StudentNumber;
+                worksheet.Cell(row, col++).Value = student.FullName;
+
+                foreach (var subject in subjects)
+                {
+                    var mark = studentMarks.FirstOrDefault(m => m.SubjectId == subject.SubjectId);
+                    decimal? selectedMark = null;
+                    if (mark != null)
+                    {
+                        selectedMark = markType switch
+                        {
+                            "BOT" => mark.BOTMark,
+                            "MOT" => mark.MOTMark,
+                            "EOT" => mark.EOTMark,
+                            _ => null
+                        };
+                    }
+                    worksheet.Cell(row, col++).Value = selectedMark?.ToString("F1") ?? "-";
+                }
+
+                row++;
+            }
+
+            // Auto-fit columns
+            worksheet.Columns().AdjustToContents();
+
+            // Add borders to data
+            var dataRange = worksheet.Range(4, 1, row - 1, col - 1);
+            dataRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thick;
+            dataRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+
+            // Generate file
+            using var stream = new MemoryStream();
+            workbook.SaveAs(stream);
+
+            var fileName = $"{markType}Marks_{classEntity.ClassName}_{academicYear}_{term}.xlsx";
             return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
 

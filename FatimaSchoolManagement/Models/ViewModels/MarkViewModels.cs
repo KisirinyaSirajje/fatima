@@ -166,4 +166,20 @@ namespace FatimaSchoolManagement.Models.ViewModels
 
         public bool IsComplete => BOTMark.HasValue && MOTMark.HasValue && EOTMark.HasValue;
     }
+
+    public class SubsMarkSheetViewModel
+    {
+        public Class Class { get; set; } = null!;
+        public int AcademicYear { get; set; }
+        public Term Term { get; set; }
+        public string MarkType { get; set; } = string.Empty;
+        public List<Subject> Subjects { get; set; } = new List<Subject>();
+        public List<StudentSubsRow> StudentRows { get; set; } = new List<StudentSubsRow>();
+    }
+
+    public class StudentSubsRow
+    {
+        public Student Student { get; set; } = null!;
+        public Dictionary<int, decimal?> SubjectMarks { get; set; } = new Dictionary<int, decimal?>();
+    }
 }
