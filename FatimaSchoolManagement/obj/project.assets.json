@@ -3736,24 +3736,26 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\sirajje\\.nuget\\packages\\": {}
+    "C:\\Users\\JOHN PAUL\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\sirajje\\Desktop\\fatima\\FatimaSchoolManagement\\FatimaSchoolManagement.csproj",
+      "projectUniqueName": "E:\\lady\\fatima\\fatimaschoolmanagement\\FatimaSchoolManagement.csproj",
       "projectName": "FatimaSchoolManagement",
-      "projectPath": "C:\\Users\\sirajje\\Desktop\\fatima\\FatimaSchoolManagement\\FatimaSchoolManagement.csproj",
-      "packagesPath": "C:\\Users\\sirajje\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\sirajje\\Desktop\\fatima\\FatimaSchoolManagement\\obj\\",
+      "projectPath": "E:\\lady\\fatima\\fatimaschoolmanagement\\FatimaSchoolManagement.csproj",
+      "packagesPath": "C:\\Users\\JOHN PAUL\\.nuget\\packages\\",
+      "outputPath": "E:\\lady\\fatima\\fatimaschoolmanagement\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\sirajje\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\JOHN PAUL\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -3771,7 +3773,8 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      }
+      },
+      "SdkAnalysisLevel": "9.0.300"
     },
     "frameworks": {
       "net8.0": {
@@ -3821,7 +3824,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.414/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

@@ -26,7 +26,18 @@ namespace FatimaSchoolManagement.Controllers
             ViewBag.Classes = classes;
             ViewBag.Terms = Enum.GetValues<Term>();
             ViewBag.AcademicYears = new[] { 2023, 2024, 2025 };
-            
+
+            return View();
+        }
+
+        // GET: Reports/ClassPerformance
+        public async Task<IActionResult> ClassPerformance()
+        {
+            var classes = await _context.Classes.Where(c => c.IsActive).OrderBy(c => c.ClassName).ToListAsync();
+            ViewBag.Classes = classes;
+            ViewBag.Terms = Enum.GetValues<Term>();
+            ViewBag.AcademicYears = new[] { 2023, 2024, 2025 };
+
             return View();
         }
 
@@ -57,7 +68,9 @@ namespace FatimaSchoolManagement.Controllers
                 EOTMark = m.EOTMark,
                 FinalMark = m.FinalMark,
                 Grade = m.Grade,
-                GradeDescription = m.GradeDescription
+                GradeDescription = m.GradeDescription,
+                OLevelPoints = m.OLevelPoints,
+                OLevelGrade = m.OLevelGrade
             }).ToList();
 
             var completeMarks = marks.Where(m => m.BOTMark.HasValue && m.MOTMark.HasValue && m.EOTMark.HasValue).ToList();
@@ -258,7 +271,9 @@ namespace FatimaSchoolManagement.Controllers
                             MOTMark = mark.MOTMark,
                             EOTMark = mark.EOTMark,
                             FinalMark = mark.FinalMark,
-                            Grade = mark.Grade
+                            Grade = mark.Grade,
+                            OLevelPoints = mark.OLevelPoints,
+                            OLevelGrade = mark.OLevelGrade
                         };
                     }
                     else
@@ -269,20 +284,26 @@ namespace FatimaSchoolManagement.Controllers
                             MOTMark = null,
                             EOTMark = null,
                             FinalMark = 0,
-                            Grade = "-"
+                            Grade = "-",
+                            OLevelPoints = 0,
+                            OLevelGrade = "-"
                         };
                     }
                 }
 
                 var completeMarks = subjectMarksDict.Values.Where(sm => sm.IsComplete).ToList();
                 var overallAverage = completeMarks.Any() ? completeMarks.Average(sm => sm.FinalMark) : 0;
+                var overallOLevelPoints = completeMarks.Any() ? completeMarks.Average(sm => sm.OLevelPoints) : 0;
+                var overallOLevelGrade = GetOLevelGrade(overallOLevelPoints);
 
                 studentRows.Add(new StudentMarkSheetRow
                 {
                     Student = student,
                     SubjectMarks = subjectMarksDict,
                     OverallAverage = overallAverage,
-                    OverallGrade = GetGrade(overallAverage)
+                    OverallGrade = GetGrade(overallAverage),
+                    OverallOLevelPoints = overallOLevelPoints,
+                    OverallOLevelGrade = overallOLevelGrade
                 });
             }
 
@@ -604,7 +625,10 @@ namespace FatimaSchoolManagement.Controllers
                 AddTableCell(marksTable, mark.BOTMark?.ToString("F1") ?? "-", normalFont);
                 AddTableCell(marksTable, mark.MOTMark?.ToString("F1") ?? "-", normalFont);
                 AddTableCell(marksTable, mark.EOTMark?.ToString("F1") ?? "-", normalFont);
-                AddTableCell(marksTable, mark.FinalMark.ToString("F1"), normalFont);
+                var finalMarkText = student.Level == EducationLevel.OLevel
+                    ? $"{mark.FinalMark.ToString("F1")} ({mark.OLevelPoints.ToString("F2")})"
+                    : mark.FinalMark.ToString("F1");
+                AddTableCell(marksTable, finalMarkText, normalFont);
                 AddTableCell(marksTable, mark.Grade, normalFont);
             }
 
@@ -635,9 +659,13 @@ namespace FatimaSchoolManagement.Controllers
             };
             document.Add(gradingParagraph);
 
-            var gradingText = "A (80-100): Exceptional Achievement | B (70-79): Outstanding Performance | " +
-                             "C (60-69): Satisfactory Performance | D (50-59): Basic Understanding | " +
-                             "E (0-49): Elementary Understanding";
+            var gradingText = student.Level == EducationLevel.OLevel
+                ? "A (2.50 – 3.00): Exceptional Achievement | B (2.10 – 2.49): Outstanding Performance | " +
+                  "C (1.60 – 2.09): Satisfactory Performance | D (1.00 – 1.59): Basic Understanding | " +
+                  "E (0.00 – 0.99): Elementary Understanding"
+                : "A (80-100): Exceptional Achievement | B (70-79): Outstanding Performance | " +
+                  "C (60-69): Satisfactory Performance | D (50-59): Basic Understanding | " +
+                  "E (0-49): Elementary Understanding";
             var gradingInfo = new Paragraph(gradingText, smallFont);
             document.Add(gradingInfo);
 
@@ -704,6 +732,15 @@ namespace FatimaSchoolManagement.Controllers
             if (mark >= 70) return "B";
             if (mark >= 60) return "C";
             if (mark >= 50) return "D";
+            return "E";
+        }
+
+        private string GetOLevelGrade(decimal points)
+        {
+            if (points >= 2.50m) return "A";
+            if (points >= 2.10m) return "B";
+            if (points >= 1.60m) return "C";
+            if (points >= 1.00m) return "D";
             return "E";
         }
     }

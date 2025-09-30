@@ -250,11 +250,11 @@
                                 var percentage = Model.GradeDistribution.Values.Sum() > 0 ? (grade.Value * 100.0) / Model.GradeDistribution.Values.Sum() : 0;
                                 var description = grade.Key switch
                                 {
-                                    "A" => "Exceptional Achievement (80-100%)",
-                                    "B" => "Outstanding Performance (70-79%)",
-                                    "C" => "Satisfactory Performance (60-69%)",
-                                    "D" => "Basic Understanding (50-59%)",
-                                    "E" => "Elementary Understanding (0-49%)",
+                                    "A" => "Exceptional Achievement (2.50 – 3.00)",
+                                    "B" => "Outstanding Performance (2.10 – 2.49)",
+                                    "C" => "Satisfactory Performance (1.60 – 2.09)",
+                                    "D" => "Basic Understanding (1.00 – 1.59)",
+                                    "E" => "Elementary Understanding (0.00 – 0.99)",
                                     _ => ""
                                 };
                                 var colorClass = grade.Key switch

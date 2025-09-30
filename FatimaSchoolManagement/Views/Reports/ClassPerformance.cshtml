@@ -1,0 +1,98 @@
+@{
+    ViewData["Title"] = "Class Performance";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-chart-line"></i>
+                        Class Performance Reports
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <!-- Class Mark Sheet -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card border-info">
+                                <div class="card-header bg-info text-white">
+                                    <h5 class="card-title mb-0">
+                                        <i class="fas fa-table"></i>
+                                        Class Mark Sheet
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="markSheetForm" action="@Url.Action("ClassMarkSheet", "Reports")" method="get">
+                                        <div class="form-group mb-3">
+                                            <label for="markSheetClassSelect" class="form-label">Select Class:</label>
+                                            <select id="markSheetClassSelect" name="classId" class="form-control" required>
+                                                <option value="">-- Select Class --</option>
+                                                @foreach (var cls in ViewBag.Classes as List<Class>)
+                                                {
+                                                    <option value="@cls.ClassId">@cls.ClassName</option>
+                                                }
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <label for="markSheetAcademicYear" class="form-label">Academic Year:</label>
+                                            <select id="markSheetAcademicYear" name="academicYear" class="form-control" required>
+                                                @foreach (var year in ViewBag.AcademicYears as int[])
+                                                {
+                                                    <option value="@year" selected="@(year == DateTime.Now.Year)">@year</option>
+                                                }
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <label for="markSheetTerm" class="form-label">Term:</label>
+                                            <select id="markSheetTerm" name="term" class="form-control" required>
+                                                @foreach (var term in ViewBag.Terms as Term[])
+                                                {
+                                                    <option value="@term">@term</option>
+                                                }
+                                            </select>
+                                        </div>
+
+                                        <div class="d-grid gap-2">
+                                            <button type="submit" class="btn btn-info">
+                                                <i class="fas fa-table"></i> View Mark Sheet
+                                            </button>
+                                            <button type="button" class="btn btn-success" onclick="exportToExcel()">
+                                                <i class="fas fa-file-excel"></i> Export to Excel
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function exportToExcel() {
+            var classId = $('#markSheetClassSelect').val();
+            var academicYear = $('#markSheetAcademicYear').val();
+            var term = $('#markSheetTerm').val();
+
+            if (!classId || !academicYear || !term) {
+                alert('Please select class, academic year, and term.');
+                return;
+            }
+
+            var url = '@Url.Action("ExportClassMarkSheetToExcel", "Reports")' +
+                      '?classId=' + classId +
+                      '&academicYear=' + academicYear +
+                      '&term=' + term;
+
+            window.open(url, '_blank');
+        }
+    </script>
+}
