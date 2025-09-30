@@ -122,6 +122,10 @@ namespace FatimaSchoolManagement.Models.ViewModels
         public decimal FinalMark { get; set; }
         public string Grade { get; set; } = string.Empty;
         public string GradeDescription { get; set; } = string.Empty;
+
+        // New properties for OLevel grading
+        public decimal OLevelPoints { get; set; }
+        public string OLevelGrade { get; set; } = string.Empty;
     }
 
     public class ClassMarkSheetViewModel
@@ -140,6 +144,11 @@ namespace FatimaSchoolManagement.Models.ViewModels
         public Dictionary<int, StudentSubjectMark> SubjectMarks { get; set; } = new Dictionary<int, StudentSubjectMark>();
         public decimal OverallAverage { get; set; }
         public string OverallGrade { get; set; } = string.Empty;
+
+        // New properties for OLevel grading
+        public decimal OverallOLevelPoints { get; set; }
+        public string OverallOLevelGrade { get; set; } = string.Empty;
+
         public int Position { get; set; }
     }
 
@@ -150,6 +159,11 @@ namespace FatimaSchoolManagement.Models.ViewModels
         public decimal? EOTMark { get; set; }
         public decimal FinalMark { get; set; }
         public string Grade { get; set; } = string.Empty;
+
+        // New properties for OLevel grading
+        public decimal OLevelPoints { get; set; }
+        public string OLevelGrade { get; set; } = string.Empty;
+
         public bool IsComplete => BOTMark.HasValue && MOTMark.HasValue && EOTMark.HasValue;
     }
 }

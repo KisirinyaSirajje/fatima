@@ -68,7 +68,9 @@ namespace FatimaSchoolManagement.Controllers
                 EOTMark = m.EOTMark,
                 FinalMark = m.FinalMark,
                 Grade = m.Grade,
-                GradeDescription = m.GradeDescription
+                GradeDescription = m.GradeDescription,
+                OLevelPoints = m.OLevelPoints,
+                OLevelGrade = m.OLevelGrade
             }).ToList();
 
             var completeMarks = marks.Where(m => m.BOTMark.HasValue && m.MOTMark.HasValue && m.EOTMark.HasValue).ToList();
@@ -269,7 +271,9 @@ namespace FatimaSchoolManagement.Controllers
                             MOTMark = mark.MOTMark,
                             EOTMark = mark.EOTMark,
                             FinalMark = mark.FinalMark,
-                            Grade = mark.Grade
+                            Grade = mark.Grade,
+                            OLevelPoints = mark.OLevelPoints,
+                            OLevelGrade = mark.OLevelGrade
                         };
                     }
                     else
@@ -280,20 +284,26 @@ namespace FatimaSchoolManagement.Controllers
                             MOTMark = null,
                             EOTMark = null,
                             FinalMark = 0,
-                            Grade = "-"
+                            Grade = "-",
+                            OLevelPoints = 0,
+                            OLevelGrade = "-"
                         };
                     }
                 }
 
                 var completeMarks = subjectMarksDict.Values.Where(sm => sm.IsComplete).ToList();
                 var overallAverage = completeMarks.Any() ? completeMarks.Average(sm => sm.FinalMark) : 0;
+                var overallOLevelPoints = completeMarks.Any() ? completeMarks.Average(sm => sm.OLevelPoints) : 0;
+                var overallOLevelGrade = GetOLevelGrade(overallOLevelPoints);
 
                 studentRows.Add(new StudentMarkSheetRow
                 {
                     Student = student,
                     SubjectMarks = subjectMarksDict,
                     OverallAverage = overallAverage,
-                    OverallGrade = GetGrade(overallAverage)
+                    OverallGrade = GetGrade(overallAverage),
+                    OverallOLevelPoints = overallOLevelPoints,
+                    OverallOLevelGrade = overallOLevelGrade
                 });
             }
 
@@ -715,6 +725,15 @@ namespace FatimaSchoolManagement.Controllers
             if (mark >= 70) return "B";
             if (mark >= 60) return "C";
             if (mark >= 50) return "D";
+            return "E";
+        }
+
+        private string GetOLevelGrade(decimal points)
+        {
+            if (points >= 2.50m) return "A";
+            if (points >= 2.10m) return "B";
+            if (points >= 1.60m) return "C";
+            if (points >= 1.00m) return "D";
             return "E";
         }
     }

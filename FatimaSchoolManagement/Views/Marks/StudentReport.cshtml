@@ -95,7 +95,7 @@
                                             <td class="text-center">
                                                 @if (subject.BOTMark.HasValue && subject.MOTMark.HasValue && subject.EOTMark.HasValue)
                                                 {
-                                                    <strong>@subject.FinalMark.ToString("F1")</strong>
+                                                    <strong>@($"{subject.FinalMark.ToString("F1")} ({subject.OLevelPoints.ToString("F2")})")</strong>
                                                 }
                                                 else
                                                 {

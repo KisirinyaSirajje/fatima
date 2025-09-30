@@ -71,6 +71,30 @@ namespace FatimaSchoolManagement.Models
             }
         }
 
+        [Display(Name = "OLevel Points")]
+        public decimal OLevelPoints
+        {
+            get
+            {
+                // Calculate points out of 3.00 based on FinalMark out of 100
+                return Math.Round((FinalMark / 100m) * 3m, 2);
+            }
+        }
+
+        [Display(Name = "OLevel Grade")]
+        public string OLevelGrade
+        {
+            get
+            {
+                var points = OLevelPoints;
+                if (points >= 2.50m) return "A";
+                if (points >= 2.10m) return "B";
+                if (points >= 1.60m) return "C";
+                if (points >= 1.00m) return "D";
+                return "E";
+            }
+        }
+
         [Display(Name = "Grade")]
         public string Grade
         {
