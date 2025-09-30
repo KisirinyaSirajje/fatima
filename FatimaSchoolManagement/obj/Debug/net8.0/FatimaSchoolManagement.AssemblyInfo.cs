@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FatimaSchoolManagement")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cbbd10bd443ad965075f0bea5259de2ea41530f1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7b4806005c99b306255169bfa5096210133fc25c")]
 [assembly: System.Reflection.AssemblyProductAttribute("FatimaSchoolManagement")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FatimaSchoolManagement")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

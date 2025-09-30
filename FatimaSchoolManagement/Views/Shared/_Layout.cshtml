@@ -43,6 +43,27 @@
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-book"></i> Subjects
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-controller="Subjects" asp-action="Index">
+                                    <i class="fas fa-list"></i> All Subjects
+                                </a></li>
+                                <li><a class="dropdown-item" asp-controller="Subjects" asp-action="Create">
+                                    <i class="fas fa-plus"></i> Add Subject
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><h6 class="dropdown-header">By Education Level</h6></li>
+                                <li><a class="dropdown-item" asp-controller="Subjects" asp-action="Index" asp-route-level="OLevel">
+                                    <i class="fas fa-graduation-cap"></i> O-Level (S1-S4)
+                                </a></li>
+                                <li><a class="dropdown-item" asp-controller="Subjects" asp-action="Index" asp-route-level="ALevel">
+                                    <i class="fas fa-university"></i> A-Level (S5-S6)
+                                </a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fas fa-edit"></i> Marks & Grades
                             </a>
                             <ul class="dropdown-menu">

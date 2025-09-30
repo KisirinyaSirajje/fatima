@@ -347,3 +347,4 @@ E:\lady\fatima\fatimaschoolmanagement\obj\Debug\net8.0\refint\FatimaSchoolManage
 E:\lady\fatima\fatimaschoolmanagement\obj\Debug\net8.0\FatimaSchoolManagement.pdb
 E:\lady\fatima\fatimaschoolmanagement\obj\Debug\net8.0\FatimaSchoolManagement.genruntimeconfig.cache
 E:\lady\fatima\fatimaschoolmanagement\obj\Debug\net8.0\ref\FatimaSchoolManagement.dll
+C:\Users\sirajje\Desktop\fatima\FatimaSchoolManagement\obj\Debug\net8.0\FatimaSchoolManagement.sourcelink.json

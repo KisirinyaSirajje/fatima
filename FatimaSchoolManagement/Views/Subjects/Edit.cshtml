@@ -1,0 +1,82 @@
+@model FatimaSchoolManagement.Models.ViewModels.SubjectCreateEditViewModel
+@{
+    ViewData["Title"] = "Edit Subject";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-edit"></i> Edit Subject</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        <input asp-for="Subject.SubjectId" type="hidden" />
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Subject.SubjectCode" class="form-label"></label>
+                                <input asp-for="Subject.SubjectCode" class="form-control" />
+                                <span asp-validation-for="Subject.SubjectCode" class="text-danger"></span>
+                                <small class="form-text text-muted">Short code for the subject (max 10 characters)</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Subject.Level" class="form-label"></label>
+                                <select asp-for="Subject.Level" class="form-select">
+                                    @foreach (var level in Model.AvailableLevels)
+                                    {
+                                        <option value="@level" selected="@(Model.Subject.Level == level)">
+                                            @(level == EducationLevel.OLevel ? "O-Level (S1-S4)" : "A-Level (S5-S6)")
+                                        </option>
+                                    }
+                                </select>
+                                <span asp-validation-for="Subject.Level" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Subject.SubjectName" class="form-label"></label>
+                            <input asp-for="Subject.SubjectName" class="form-control" />
+                            <span asp-validation-for="Subject.SubjectName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Subject.Description" class="form-label"></label>
+                            <textarea asp-for="Subject.Description" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Subject.Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input asp-for="Subject.IsActive" class="form-check-input" />
+                                <label asp-for="Subject.IsActive" class="form-check-label">
+                                    Subject is active and available for marks entry
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Important:</strong> Changing the education level will affect which classes can access this subject. 
+                            Existing marks will remain, but students in incompatible levels won't see this subject for new entries.
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to List
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Update Subject
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

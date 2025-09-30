@@ -1,0 +1,169 @@
+@model FatimaSchoolManagement.Models.ViewModels.SubjectStatisticsViewModel
+@{
+    ViewData["Title"] = "Subject Details";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-book"></i> Subject Details</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-4">Subject Code:</dt>
+                                <dd class="col-sm-8">
+                                    <strong>@Model.Subject.SubjectCode</strong>
+                                </dd>
+                                
+                                <dt class="col-sm-4">Subject Name:</dt>
+                                <dd class="col-sm-8">@Model.Subject.SubjectName</dd>
+                                
+                                <dt class="col-sm-4">Education Level:</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge @(Model.Subject.Level == EducationLevel.OLevel ? "bg-primary" : "bg-info") fs-6">
+                                        @(Model.Subject.Level == EducationLevel.OLevel ? "O-Level (S1-S4)" : "A-Level (S5-S6)")
+                                    </span>
+                                </dd>
+                                
+                                <dt class="col-sm-4">Status:</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge @(Model.Subject.IsActive ? "bg-success" : "bg-secondary") fs-6">
+                                        <i class="fas @(Model.Subject.IsActive ? "fa-check-circle" : "fa-pause-circle")"></i>
+                                        @(Model.Subject.IsActive ? "Active" : "Inactive")
+                                    </span>
+                                </dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            @if (!string.IsNullOrWhiteSpace(Model.Subject.Description))
+                            {
+                                <h6>Description:</h6>
+                                <p class="text-muted">@Model.Subject.Description</p>
+                            }
+                            else
+                            {
+                                <p class="text-muted fst-italic">No description provided</p>
+                            }
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Statistics Section -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h6><i class="fas fa-chart-bar"></i> Subject Statistics</h6>
+                            
+                            @if (Model.RecentMarks != null && Model.RecentMarks.Any())
+                            {
+                                <div class="row text-center">
+                                    <div class="col-md-3">
+                                        <div class="border p-2 rounded">
+                                            <h5 class="text-primary">@Model.RecentMarks.Count()</h5>
+                                            <small class="text-muted">Total Marks</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="border p-2 rounded">
+                                            <h5 class="text-success">@Model.TotalStudentsEnrolled</h5>
+                                            <small class="text-muted">Students</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="border p-2 rounded">
+                                            <h5 class="text-info">@Model.RecentMarks.Where(m => m.FinalMark >= 50).Count()</h5>
+                                            <small class="text-muted">Passes (≥50%)</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="border p-2 rounded">
+                                            <h5 class="text-warning">@Model.AverageGrade.ToString("F1")%</h5>
+                                            <small class="text-muted">Average</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-3">
+                                    <h6>Recent Performance</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Student</th>
+                                                    <th>Class</th>
+                                                    <th>Term</th>
+                                                    <th>Final Mark</th>
+                                                    <th>Grade</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var mark in Model.RecentMarks.OrderByDescending(m => m.MarkId).Take(10))
+                                                {
+                                                    <tr>
+                                                        <td>@mark.Student?.FullName</td>
+                                                        <td>@mark.Student?.Class?.ClassName</td>
+                                                        <td>@mark.Term</td>
+                                                        <td>@mark.FinalMark%</td>
+                                                        <td>
+                                                            <span class="badge bg-secondary">@mark.Grade</span>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle"></i>
+                                    No marks have been entered for this subject yet.
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to List
+                        </a>
+                        
+                        <div>
+                            @if (Model.Subject.IsActive)
+                            {
+                                <a asp-action="Deactivate" asp-route-id="@Model.Subject.SubjectId" 
+                                   class="btn btn-warning me-2"
+                                   onclick="return confirm('Are you sure you want to deactivate this subject?')">
+                                    <i class="fas fa-pause"></i> Deactivate
+                                </a>
+                            }
+                            else
+                            {
+                                <a asp-action="Activate" asp-route-id="@Model.Subject.SubjectId" 
+                                   class="btn btn-success me-2">
+                                    <i class="fas fa-play"></i> Activate
+                                </a>
+                            }
+                            
+                            <a asp-action="Edit" asp-route-id="@Model.Subject.SubjectId" class="btn btn-primary me-2">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            
+                            <a asp-action="Delete" asp-route-id="@Model.Subject.SubjectId" class="btn btn-danger">
+                                <i class="fas fa-trash-alt"></i> Delete
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

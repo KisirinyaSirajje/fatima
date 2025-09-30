@@ -33,6 +33,7 @@ namespace FatimaSchoolManagement.Controllers
         public async Task<IActionResult> ClassEntry()
         {
             var classes = await _context.Classes.Where(c => c.IsActive).OrderBy(c => c.ClassName).ToListAsync();
+            // Start with all subjects, filtering will happen when class is selected
             var subjects = await _context.Subjects.Where(s => s.IsActive).OrderBy(s => s.SubjectName).ToListAsync();
 
             var viewModel = new ClassMarkEntryViewModel
@@ -86,8 +87,10 @@ namespace FatimaSchoolManagement.Controllers
             }
 
             var classes = await _context.Classes.Where(c => c.IsActive).OrderBy(c => c.ClassName).ToListAsync();
-            var subjects = await _context.Subjects.Where(s => s.IsActive).OrderBy(s => s.SubjectName).ToListAsync();
+            
+            // Get subjects filtered by the selected class's education level
             var selectedClass = await _context.Classes.FindAsync(classId);
+            var subjects = await GetSubjectsForClassInternal(classId);
             var selectedSubject = await _context.Subjects.FindAsync(subjectId);
 
             var viewModel = new ClassMarkEntryViewModel
@@ -104,6 +107,63 @@ namespace FatimaSchoolManagement.Controllers
             };
 
             return View("ClassEntry", viewModel);
+        }
+
+        // API: Get subjects for a specific class (filtered by education level)
+        [HttpGet]
+        public async Task<IActionResult> GetSubjectsForClass(int classId)
+        {
+            var classEntity = await _context.Classes.FindAsync(classId);
+            if (classEntity == null)
+            {
+                return Json(new List<object>());
+            }
+
+            // Determine education level based on class name
+            var educationLevel = DetermineEducationLevel(classEntity.ClassName);
+            
+            var subjects = await _context.Subjects
+                .Where(s => s.IsActive && s.Level == educationLevel)
+                .OrderBy(s => s.SubjectName)
+                .Select(s => new { 
+                    subjectId = s.SubjectId, 
+                    subjectName = s.SubjectName,
+                    subjectCode = s.SubjectCode 
+                })
+                .ToListAsync();
+
+            return Json(subjects);
+        }
+
+        // Internal helper method to get subjects for class
+        private async Task<List<Subject>> GetSubjectsForClassInternal(int classId)
+        {
+            var classEntity = await _context.Classes.FindAsync(classId);
+            if (classEntity == null)
+            {
+                return new List<Subject>();
+            }
+
+            // Determine education level based on class name
+            var educationLevel = DetermineEducationLevel(classEntity.ClassName);
+            
+            return await _context.Subjects
+                .Where(s => s.IsActive && s.Level == educationLevel)
+                .OrderBy(s => s.SubjectName)
+                .ToListAsync();
+        }
+
+        // Helper method to determine education level from class name
+        private EducationLevel DetermineEducationLevel(string className)
+        {
+            // Classes S1, S2, S3, S4 are O-Level
+            // Classes S5, S6 are A-Level
+            if (className.StartsWith("S5") || className.StartsWith("S6"))
+            {
+                return EducationLevel.ALevel;
+            }
+            
+            return EducationLevel.OLevel;
         }
 
         // POST: Marks/SaveClassMarks
@@ -180,9 +240,14 @@ namespace FatimaSchoolManagement.Controllers
                 return NotFound();
             }
 
+            // Determine the student's education level
+            var educationLevel = DetermineEducationLevel(student.Class.ClassName);
+
+            // Get marks only for subjects that match the student's education level
             var marks = await _context.Marks
                 .Include(m => m.Subject)
-                .Where(m => m.StudentId == studentId && m.AcademicYear == academicYear && m.Term == term)
+                .Where(m => m.StudentId == studentId && m.AcademicYear == academicYear && m.Term == term
+                           && m.Subject.Level == educationLevel)
                 .OrderBy(m => m.Subject.SubjectName)
                 .ToListAsync();
 
@@ -205,10 +270,12 @@ namespace FatimaSchoolManagement.Controllers
             // Calculate class position
             var classStudents = await _context.Students.Where(s => s.ClassId == student.ClassId).Select(s => s.StudentId).ToListAsync();
             
-            // Get all marks for class students (fetch to client first)
+            // Get all marks for class students (fetch to client first) - filtered by education level
             var classMarksRaw = await _context.Marks
+                .Include(m => m.Subject)
                 .Where(m => classStudents.Contains(m.StudentId) && m.AcademicYear == academicYear && m.Term == term 
-                           && m.BOTMark.HasValue && m.MOTMark.HasValue && m.EOTMark.HasValue)
+                           && m.BOTMark.HasValue && m.MOTMark.HasValue && m.EOTMark.HasValue
+                           && m.Subject.Level == educationLevel)
                 .ToListAsync();
             
             // Calculate averages on client side

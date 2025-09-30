@@ -42,7 +42,7 @@
                 <div class="row g-3">
                     <div class="col-md-3">
                         <label for="classId" class="form-label">Class *</label>
-                        <select asp-for="ClassId" class="form-select" required>
+                        <select asp-for="ClassId" class="form-select" required onchange="loadSubjectsForClass()">
                             <option value="">Select Class</option>
                             @foreach (var cls in Model.Classes)
                             {
@@ -63,6 +63,7 @@
                                 </option>
                             }
                         </select>
+                        <small class="form-text text-muted">Subjects are filtered by class education level</small>
                     </div>
                     <div class="col-md-2">
                         <label for="academicYear" class="form-label">Academic Year *</label>
@@ -228,6 +229,41 @@
 
 @section Scripts {
     <script>
+        function loadSubjectsForClass() {
+            const classSelect = document.querySelector('select[name="ClassId"]');
+            const subjectSelect = document.querySelector('select[name="SubjectId"]');
+            const classId = classSelect.value;
+            
+            if (!classId) {
+                subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+                return;
+            }
+            
+            // Show loading
+            subjectSelect.innerHTML = '<option value="">Loading subjects...</option>';
+            subjectSelect.disabled = true;
+            
+            fetch(`/Marks/GetSubjectsForClass?classId=${classId}`)
+                .then(response => response.json())
+                .then(subjects => {
+                    subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+                    
+                    subjects.forEach(subject => {
+                        const option = document.createElement('option');
+                        option.value = subject.subjectId;
+                        option.textContent = `${subject.subjectName} (${subject.subjectCode})`;
+                        subjectSelect.appendChild(option);
+                    });
+                    
+                    subjectSelect.disabled = false;
+                })
+                .catch(error => {
+                    console.error('Error loading subjects:', error);
+                    subjectSelect.innerHTML = '<option value="">Error loading subjects</option>';
+                    subjectSelect.disabled = false;
+                });
+        }
+
         function calculateFinalMark(index) {
             const botInput = document.querySelector(`input[name="StudentMarks[${index}].BOTMark"]`);
             const motInput = document.querySelector(`input[name="StudentMarks[${index}].MOTMark"]`);
