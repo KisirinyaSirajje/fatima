@@ -64,6 +64,14 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwb3J0c1xTdHVkZW50UmVwb3J0Q2FyZC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[E:/lady/fatima/FatimaSchoolManagement/Views/Reports/Subs.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwb3J0c1xTdWJzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/lady/fatima/FatimaSchoolManagement/Views/Reports/ViewSubsMarks.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwb3J0c1xWaWV3U3Vic01hcmtzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [E:/lady/fatima/FatimaSchoolManagement/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
