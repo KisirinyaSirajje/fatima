@@ -26,7 +26,18 @@ namespace FatimaSchoolManagement.Controllers
             ViewBag.Classes = classes;
             ViewBag.Terms = Enum.GetValues<Term>();
             ViewBag.AcademicYears = new[] { 2023, 2024, 2025 };
-            
+
+            return View();
+        }
+
+        // GET: Reports/ClassPerformance
+        public async Task<IActionResult> ClassPerformance()
+        {
+            var classes = await _context.Classes.Where(c => c.IsActive).OrderBy(c => c.ClassName).ToListAsync();
+            ViewBag.Classes = classes;
+            ViewBag.Terms = Enum.GetValues<Term>();
+            ViewBag.AcademicYears = new[] { 2023, 2024, 2025 };
+
             return View();
         }
 
