@@ -1,0 +1,89 @@
+@{
+    ViewData["Title"] = "SUBS Report";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-chart-bar"></i>
+                        SUBS Reports
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <!-- SUBS Report -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card border-info">
+                                <div class="card-header bg-info text-white">
+                                    <h5 class="card-title mb-0">
+                                        <i class="fas fa-table"></i>
+                                        Subject Marks Report
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <form asp-action="ViewSubsMarks" method="post">
+                                        <div class="form-group mb-3">
+                                            <label for="subsClassSelect" class="form-label">Select Class:</label>
+                                            <select id="subsClassSelect" name="classId" class="form-control" required>
+                                                <option value="">-- Select Class --</option>
+                                                @foreach (var cls in ViewBag.Classes as List<Class>)
+                                                {
+                                                    <option value="@cls.ClassId">@cls.ClassName</option>
+                                                }
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <label for="subsAcademicYear" class="form-label">Academic Year:</label>
+                                            <select id="subsAcademicYear" name="academicYear" class="form-control" required>
+                                                @foreach (var year in ViewBag.AcademicYears as int[])
+                                                {
+                                                    <option value="@year" selected="@(year == DateTime.Now.Year)">@year</option>
+                                                }
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <label for="subsTerm" class="form-label">Term:</label>
+                                            <select id="subsTerm" name="term" class="form-control" required>
+                                                @foreach (var term in ViewBag.Terms as Term[])
+                                                {
+                                                    <option value="@term">@term</option>
+                                                }
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <label for="subsMarkType" class="form-label">Mark Type:</label>
+                                            <select id="subsMarkType" name="markType" class="form-control" required>
+                                                <option value="">-- Select Mark Type --</option>
+                                                <option value="BOT">BOT (Beginning of Term)</option>
+                                                <option value="MOT">MOT (Middle of Term)</option>
+                                                <option value="EOT">EOT (End of Term)</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="d-grid gap-2">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-eye"></i> View Marks
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // No additional scripts needed
+    </script>
+}
